@@ -168,7 +168,7 @@ import { SCOPE } from 'element-plus';
         let url=this.coachUrl
         let params=this.queryData
       this.$axios.get(url,{params:params}).then((res)=>{
-        if(res.data.code==this.$code.SELECT_SUCCES){
+        if(res.data.code==this.$code.SELECT_SUCCESS){
           this.userData=res.data.data
         }
         else{
@@ -254,8 +254,12 @@ import { SCOPE } from 'element-plus';
         let url=this.coachUrl
         let params=this.queryData
       this.$axios.get(url,{params:params}).then((res)=>{
-        if(res.data.code==this.$code.SELECT_SUCCES){
+        if(res.data.code==this.$code.SELECT_SUCCESS){
           this.userData=res.data.data
+          this.$message({
+            type:'success',
+            message: res.data.message
+          })
         }
         else{
           this.$message({

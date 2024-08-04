@@ -5,12 +5,13 @@
         <img src="../assets/icon.jpeg" alt="" style="width: 50px; top: 5px; position:relative">
         <span class="title" >健身房管理系统</span>
   </el-header>
-    <el-container >
+    <el-container>
     <el-aside style="background-color: #31323f; min-height: 93vh;">
       <el-menu
-        active-text-color="#7fa4ff"
+        active-text-color="#cc7f2b"
         background-color="#31323f"
-        text-color="#fff"
+        text-color="#bdc7cc"
+        :collapse="false"
         router
       >
             <el-sub-menu index="1">
@@ -20,11 +21,33 @@
                 </template>  
                 <el-menu-item index="/customerManagement">客户管理</el-menu-item>
                 <el-menu-item index="/coachManagement">教练管理</el-menu-item>
-                <el-menu-item index="/">选项2</el-menu-item>
             </el-sub-menu>
+            <el-menu-item index="">会员管理</el-menu-item>
+            
+            <el-sub-menu index="2">
+              <template #title>
+                <span>健身房信息管理</span>
+              </template>
+              <el-menu-item index="">练习区域管理</el-menu-item>
+              <el-sub-menu index="2-1">
+                <template #title>
+                <span>课程管理</span>
+              </template>
+              <el-menu-item index="">私教管理</el-menu-item>
+                <el-menu-item index="">团课管理</el-menu-item>
+              </el-sub-menu>
+            </el-sub-menu>
+            
+            <el-sub-menu index="3">
+              <template #title>
+                <span>财务管理</span>
+              </template>
+                <el-menu-item index="">交易信息管理</el-menu-item>
+            </el-sub-menu>
+            <el-menu-item index="/">登出</el-menu-item>
         </el-menu>
     </el-aside>
-    <el-main class="main">
+    <el-main class="adminMain">
         <router-view/>
     </el-main>
   </el-container>
@@ -45,13 +68,11 @@
     align-content: center;
     justify-content: center;
 }
-.main{
+.adminMain{
+  background-image: url(../assets/adminBackgroud.jpg);
   padding: 0px;
   display: flex;
-  background-image: url(../assets/Backgroud.jpg);
-  background-size: cover;
+  background-size: 100% 100%;
   width: 100%;
-  position: relative;
-  overflow: hidden;
 }
 </style>

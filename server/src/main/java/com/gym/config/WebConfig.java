@@ -13,7 +13,9 @@ public class WebConfig implements WebMvcConfigurer {
         // 允许跨域的域名，*代表所有域名
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:5173")
-                // 允许的方法
-                .allowedMethods("*");
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(3600);
     }
 }

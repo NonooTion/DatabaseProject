@@ -13,15 +13,26 @@ import java.util.List;
 public class CustomerController {
     @Autowired
     UserDao userDao;
+
+    @GetMapping("/findById")
+    Result findCustomerById(@RequestParam(required = true)Integer userId)
+    {
+        if(userId!=null)
+        {
+            User user = userDao.selectById(userId);
+            return new Result(Code.SELECT_SUCCESS,user,"查找成功");
+        }
+        return new Result(Code.SELECT_FAILURE,null,"查找失败");
+    }
     @GetMapping
     Result findCustomers(@RequestParam(required = false) String userType,
                          @RequestParam(required = false) String tel,
                          @RequestParam(required = false) String name)
     {
         QueryWrapper<User> qw= new QueryWrapper<>();
-        qw.eq(!userType.isEmpty(),"user_type",userType);
-        qw.eq(!tel.isEmpty(),"tel",tel);
-        qw.eq(!name.isEmpty(),"name",name);
+        qw.eq(userType!=null&&!userType.isEmpty(),"user_type",userType);
+        qw.eq(tel!=null&&!tel.isEmpty(),"tel",tel);
+        qw.eq(name!=null&&!name.isEmpty(),"name",name);
         List<User> users = userDao.selectList(qw);
         Result result=new Result();
         result.setData(users);

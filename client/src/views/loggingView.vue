@@ -1,13 +1,13 @@
 <template>
 	<div class="login">
-		<el-form class="login-container">
+		<el-form class="login-container" :model="loginInfo" ref="loginForm" :rules="rules">
 			<el-text type="info" size="large">欢迎使用健身房管理系统</el-text>
 			<h1 style="color: black;">用户登录</h1>
-			<el-form-item label="账号:">
-				<el-input type="text" v-model="userName" placeholder="登录账号" autocomplete="off"></el-input>
+			<el-form-item label="账号:" prop="userName">
+				<el-input type="text" v-model="loginInfo.userName" placeholder="登录账号"></el-input>
 			</el-form-item>
-			<el-form-item label="密码:" >
-				<el-input type="password" v-model="password" placeholder="登录密码" autocomplete="off" show-password></el-input>
+			<el-form-item label="密码:" prop="password">
+				<el-input type="password" v-model="loginInfo.password" placeholder="登录密码" show-password></el-input>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" style="width:100%;" @click="doSubmit()">登录</el-button>
@@ -25,8 +25,18 @@
     name: 'Login',
     data(){
       return {
-       userName:'',
-       password:''
+		loginInfo:{
+			userName:'',
+			password:''
+		},
+		rules:{
+			userName:[
+				{required:true ,message:'请输入用户名',trigger:'blur'}
+			],
+			password:[
+				{required:true ,message:'请输入密码',trigger:'blur'}
+			]
+		}
       }
     },
 
@@ -39,29 +49,47 @@
 		this.$router.push('/reset')
 	   },
        doSubmit(){
-        let  url=this.$path.loggingUrl
-		let params={
-			userName:this.userName,
-			password:this.password
-		}
-		this.$axios.post(url,params).then(res=>{
-			if(res.data.code==this.$code.LOGIN_SUCCESS){
-			//登录成功消息
-			this.$message({
-				message:res.data.message,
-				type: 'success'
-			})
-			//跳转到页面
-			this.$router.push("/admin")
-		}
-			else
-			{
-				this.$message({
-				message:res.data.message,
-				type: 'error'
-			})
+		this.$refs.loginForm.validate(
+			(valid)=>{
+			if(valid){
+				let  url=this.$path.loggingUrl
+				let params={
+					userName:this.loginInfo.userName,
+					password:this.loginInfo.password
+				}
+				this.$axios.post(url,params).then(res=>{
+					if(res.data.code==this.$code.LOGIN_SUCCESS){
+					//存储登录用户的信息
+					sessionStorage.setItem('userId',res.data.data.userId)
+					sessionStorage.setItem('userType',res.data.data.userType)
+					
+					let userType=sessionStorage.getItem('userType')
+					//根据用户类型跳转页面
+					if(userType==="管理员") this.$router.push("/admin")
+					else if(userType==="客户") this.$router.push("/customer")
+					else if(userType==="教练") this.$router.push("/coach")
+					else this.$alert("账户类型异常!请联系管理员")
+					//登录成功消息
+					this.$message({
+						message:res.data.message,
+						type: 'success'
+					})
+					
+				}
+					else
+					{
+						this.$message({
+						message:res.data.message,
+						type: 'error'
+					})
+					}
+				})
 			}
-		})
+			else{
+				this.$message({type:'error', message:'请输入账号和密码'})
+			}
+		}
+	)
        }
      }
   }

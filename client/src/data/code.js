@@ -8,7 +8,7 @@ const code={
     RESET_SUCCESS:"100020",//重置密码成功
     RESET_FAILURE:"100021",//重置密码失败
 
-    SELECT_SUCCES:"200000",//查询成功
+    SELECT_SUCCESS:"200000",//查询成功
     SELECT_FAILURE:"200001",//查询失败
 
     DELETE_SUCCESS:"200010",//删除成功

@@ -12,7 +12,6 @@ import lombok.Data;
 @Data
 @TableName(value = "users")
 public class User {
-    @TableField(value = "user_id")
     @TableId(type = IdType.AUTO)
     Integer userId;
     String name;

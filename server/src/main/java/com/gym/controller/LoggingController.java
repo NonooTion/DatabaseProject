@@ -33,6 +33,7 @@ public class LoggingController {
         //如果账户存在，检查密码是否匹配
         if (user!=null&&user.getPassword().equals(password)) {
             result.setCode(Code.LOGIN_SUCCESS);
+            result.setData(user);
             result.setMessage("登录成功");
         } else {
             result.setCode(Code.LOGIN_FAILURE);

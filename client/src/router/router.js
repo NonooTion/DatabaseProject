@@ -23,11 +23,25 @@ const routes =[
             {
                 //人员管理
                 path:"/customerManagement",
-                component: ()=>import("@/views/PME/customerManagement.vue")
+                component: ()=>import("@/views/adminViews/customerManagement.vue")
             },
             {
                 path:"/coachManagement",
-                component: ()=>import("@/views/PME/coachManagement.vue")
+                component: ()=>import("@/views/adminViews/coachManagement.vue")
+            }
+        ]
+    },
+    {
+        path:'/customer',
+        component: ()=>import('@/views/customerView.vue'),
+        children:[
+            {
+                path:"/customerInfo",
+                component: ()=>import("@/views/customerViews/customerInfo.vue")
+            },
+            {
+                path:'/membership',
+                component: ()=>import("@/views/customerViews/membership.vue")
             }
         ]
     }

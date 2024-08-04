@@ -69,7 +69,7 @@
         </el-form>
       </el-dialog>
 
-      <el-header style="padding:0px;">
+      <el-header style="padding:0">
           <el-form class="queryForm" :inline="true">
             <el-form-item label="姓名:">
                 <el-input placeholder="请输入姓名" v-model="queryData.name"> </el-input>
@@ -167,7 +167,7 @@ import { SCOPE } from 'element-plus';
         let url=this.$path.customerUrl
         let params=this.queryData
       this.$axios.get(url,{params:params}).then((res)=>{
-        if(res.data.code==this.$code.SELECT_SUCCES){
+        if(res.data.code==this.$code.SELECT_SUCCESS){
           this.userData=res.data.data
         }
         else{
@@ -253,8 +253,12 @@ import { SCOPE } from 'element-plus';
         let url=this.$path.customerUrl
         let params=this.queryData
       this.$axios.get(url,{params:params}).then((res)=>{
-        if(res.data.code==this.$code.SELECT_SUCCES){
+        if(res.data.code==this.$code.SELECT_SUCCESS){
           this.userData=res.data.data
+          this.$message({
+            type:'success',
+            message: res.data.message
+          })
         }
         else{
           this.$message({

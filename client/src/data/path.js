@@ -1,3 +1,5 @@
+import Membership from "@/views/customerViews/membership.vue";
+
 const baseUrl='http://localhost:8080'
 
 const path = {
@@ -11,7 +13,14 @@ const path = {
     customerUrl: baseUrl+"/customer",
 
     //教练信息操作路径
-    coachUrl: baseUrl+"/coach"
+    coachUrl: baseUrl+"/coach",
+
+    //会员信息操作路径
+    membershipUrl: baseUrl+"/membership",
+
+    //交易信息操作路径
+    transactionUrl: baseUrl+"/transaction",
+
 }
 
 export default path;
