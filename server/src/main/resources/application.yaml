@@ -4,6 +4,20 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/gym?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/gym?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8
     username: root
     password: Yq200310121818
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 110MB
+
+PRACTICE_AREA_IMAGE_PATH: C:\\Users\\86177\\Desktop\\code\\client\\src\\image\\areaImage
+PRACTICE_AREA_IMAGE_SAVE_PATH: src/image/areaImage/
+
+COACH_IMAGE_PATH: C:\\Users\\86177\\Desktop\\code\\client\\src\\image\\coachImage
+COACH_IMAGE_SAVE_PATH: src/image/coachImage/
+
+GROUP_CLASS_IMAGE_PATH: C:\\Users\\86177\\Desktop\\code\\client\\src\\image\\groupClassImage
+GROUP_CLASS_IMAGE_SAVE_PATH: src/image/groupClassImage/

@@ -11,7 +11,7 @@ public class Result {
     {
 
     }
-    Result(String code, Object data, String message) {
+    public Result(String code, Object data, String message) {
         this.code = code;
         this.data = data;
         this.message = message;

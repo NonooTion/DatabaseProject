@@ -118,7 +118,7 @@ import { SCOPE } from 'element-plus';
   export default{
     data(){
       return{
-        coachUrl:this.$path.coachUrl,
+        userUrl:this.$path.userUrl,
         userData:[],
         queryData:{
           tel:'',
@@ -165,7 +165,7 @@ import { SCOPE } from 'element-plus';
       //获取所有用户的信息
       findAll()
       {
-        let url=this.coachUrl
+        let url=this.userUrl
         let params=this.queryData
       this.$axios.get(url,{params:params}).then((res)=>{
         if(res.data.code==this.$code.SELECT_SUCCESS){
@@ -189,7 +189,7 @@ import { SCOPE } from 'element-plus';
       },
       editSubmit()
       {
-        let url=this.coachUrl
+        let url=this.userUrl
         let params=this.editForm
         this.$axios.put(url,params).then(
           (res)=>{
@@ -220,7 +220,7 @@ import { SCOPE } from 'element-plus';
             type: 'warning',
           }
         ).then(()=>{
-          let url=this.coachUrl
+          let url=this.userUrl
           let params=row;
           console.log(params)
           this.$axios.delete(url,{params:params}).then((res)=>{
@@ -250,8 +250,7 @@ import { SCOPE } from 'element-plus';
       //条件查询
       handleQuery()
       {
-        console.log(this.queryData)
-        let url=this.coachUrl
+        let url=this.userUrl
         let params=this.queryData
       this.$axios.get(url,{params:params}).then((res)=>{
         if(res.data.code==this.$code.SELECT_SUCCESS){
@@ -280,7 +279,7 @@ import { SCOPE } from 'element-plus';
       handleSubmit(){
         this.$refs.addForm.validate((valid)=>{
           if(valid){
-            let url=this.coachUrl;
+            let url=this.userUrl;
         let params=this.userForm;
         this.$axios.post(url,params).then((res)=>{
           if(res.data.code==this.$code.ADD_FAILURE){

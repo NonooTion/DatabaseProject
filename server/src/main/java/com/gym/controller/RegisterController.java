@@ -1,7 +1,9 @@
 package com.gym.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.gym.damain.Coach;
 import com.gym.damain.User;
+import com.gym.dao.CoachDao;
 import com.gym.dao.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +13,8 @@ import org.springframework.web.bind.annotation.*;
 public class RegisterController {
     @Autowired
     UserDao userDao;
-
+    @Autowired
+    CoachDao coachDao;
     @PostMapping("/register")
     Result userRegister(@RequestBody User user)
     {
@@ -22,6 +25,13 @@ public class RegisterController {
         User theUser = userDao.selectOne(qw);
         if(theUser!=null) return new Result(Code.REGISTER_FAILURE,null,"用户名已存在");
         userDao.insert(user);
+
+        //如果是教练账号，生成教练信息
+        if(user.getUserType().equals("教练")){
+            Coach coach=new Coach();
+            coach.setCoachId(user.getUserId());
+            coachDao.insert(coach);
+        }
         return new Result(Code.REGISTER_SUCCESS,null,"注册成功");
     }
 

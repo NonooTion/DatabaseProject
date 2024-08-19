@@ -1,6 +1,6 @@
 <template>
     <!-- 充值对话框 -->
-    <el-dialog title="充值" v-model="rechargeDialogVisiable" style="width: 30%; height: 30%;">
+    <el-dialog title="充值" v-model="rechargeDialogVisible" style="width: 30%; height: 30%;">
         <div style="margin-top: 5%;">
             <h2>请选择支付金额：</h2>
             <el-form label-width="80px" >
@@ -14,11 +14,30 @@
             </el-form>
         </div>
         <el-container style="margin-left: 70%; margin-top: 15%;">
-            <el-button type="primary" @click="rechargeConfirm()">确 定</el-button>
-            <el-button type="danger" @click="rechargeCancel()">取 消</el-button>
+            <el-button type="primary" @click="rechargeConfirm()">确定</el-button>
+            <el-button type="danger" @click="rechargeCancel()">取消</el-button>
         </el-container>
     </el-dialog>
 
+    <!-- 升级对话框 -->
+     <el-dialog title="升级会员卡" v-model="upgradeDialogVisible">
+         <el-form ref="upgradeForm" :model="membershipForm" :rules="upgradeRules">
+             <el-form-item label="类型" prop="type" >
+                 <el-select v-model="membershipForm.type" placeholder="请选择类型" @change="handleTypeChange" >
+                     <el-option v-for="item in membershipCards" :key="item.id" :label="item.type" :value="item">
+                    </el-option>
+                 </el-select>
+             </el-form-item>
+             <el-form-item prop="id"></el-form-item>
+             <el-form-item label="价格" prop="price">
+                <text style="font-size: 30px;">{{ membershipForm.price }}(元)</text>
+             </el-form-item>
+         </el-form>
+         <div>
+             <el-button @click="upgradeDialogVisible = false">取 消</el-button>
+             <el-button type="primary" @click="upgradeConfirm()">确 定</el-button>
+         </div>
+     </el-dialog>
     <!-- 卡片升级对话框 -->
 
     <el-container style="background-color: #e3e0f3; height: 100%;">
@@ -30,8 +49,6 @@
                 <h3 style="text-align: center;">会员权益</h3>
                 <h4>1.年卡与月卡用户免费自主练习区域</h4>
                 <h4>2.次卡用户每次入场使用自主练习区域将从卡中扣除响应余额</h4>
-                <h4>3.年卡用户报名团课享受7折优惠</h4>
-                <h4>4.月卡用户报名团课享受9折优惠</h4>
                 <br>
                 <h3 style="text-align: center;">操作</h3>
                 <h4>1.点击充值按钮为会员卡充值</h4>
@@ -64,7 +81,7 @@
                 </div>
                 <div style="margin-top: 20%; margin-left: 49%;">
                     <el-button type="primary" @click="recharge()">充值</el-button>
-                    <el-button type="warning">升级</el-button>
+                    <el-button type="warning" @click="upgrade()">升级</el-button>
                     <el-button type="success" @click="activation()">激活</el-button>
                     <el-button type="danger"@click="pause()">暂停</el-button>
                 </div>
@@ -85,8 +102,6 @@ import CustomerInfo from './customerInfo.vue';
         data()
         {
             return{
-                // Url路径
-                transactionUrl:this.$path.transactionUrl+"/recharge",
                 membershipUrl:this.$path.membershipUrl,
                 //数据
                 userInfo:{
@@ -103,9 +118,20 @@ import CustomerInfo from './customerInfo.vue';
                     startDate:'',
                     endDate:''
                 },
-                rechargeDialogVisiable:false,
+                membershipCards:[]
+                ,
+                membershipForm:{
+                    id:-1,
+                    type:'',
+                    price:0.00
+                },
+                upgradeDialogVisible:false,
+                rechargeDialogVisible:false,
                 money:0.00,
-                validity:""
+                validity:"",
+                upgradeRules:{
+                    type:[{required:true,message:"请选择要升级的会员卡类型",trigger:"blur"}],
+                }
             }
         },
         methods:{
@@ -151,12 +177,12 @@ import CustomerInfo from './customerInfo.vue';
             recharge()
             {
                 this.money=''
-                this.rechargeDialogVisiable=true
+                this.rechargeDialogVisible=true
             },
             //取消充值
             rechargeCancel()
             {
-                this.rechargeDialogVisiable=false
+                this.rechargeDialogVisible=false
                 this.$message({type:'success',message:'充值已取消'})
             },
             //充值
@@ -164,11 +190,14 @@ import CustomerInfo from './customerInfo.vue';
                 if(isNaN(this.money) || this.money<=0){
                     this.$message({type:"error",message:"充值金额必须为大于0的数字"})
                 }
+                else if(this.membershipInfo.status==='暂停'){
+                    this.$message({type:'error',message:'会员卡处于暂停状态，无法充值'})
+                }
                 else{
-                let url=this.transactionUrl;
+                let url=this.membershipUrl+"/recharge";
                 let params={
                     userId: sessionStorage.getItem("userId"),
-                    transactionType: '其他',
+                    transactionType: '会员卡充值',
                     amount: this.money,
                     description: '会员卡充值'
                 }
@@ -184,9 +213,79 @@ import CustomerInfo from './customerInfo.vue';
                     }
                 )
                 }
+                this.rechargeDialogVisible=false;  
             },
             //升级卡
-
+            upgrade()
+            {
+                this.upgradeDialogVisible=true
+            },
+            //选中卡时，更新价格
+            handleTypeChange(value)
+            {
+                this.membershipForm.id=value.id
+                this.membershipForm.price=value.price
+                this.membershipForm.type=value.type
+            },
+            //处理升级操作
+            upgradeConfirm(){
+                if(this.membershipInfo.status==='暂停'){
+                    this.$message({type:'error',message:'会员卡处于暂停状态，无法升级'})
+                }
+                else{
+                this.$refs.upgradeForm.validate(
+                (valid)=>{
+                    if(valid){
+                    if(this.membershipInfo.membershipType==='年卡')
+                    {
+                        this.$notify({ title: '升级失败', message: '您的会员卡已是年卡，无需升级', type: 'warning' });
+                    }
+                    else if(this.membershipInfo.membershipType==='月卡'&&this.membershipForm.type==='月卡')
+                    {
+                        this.$notify({ title: '升级失败', message: '您的会员卡已是月卡，无需升级为月卡', type: 'warning' });
+                    }
+                    else{
+                    let url =this.membershipUrl+"/upgrade"
+                    let params={
+                        membership:this.membershipInfo,
+                        updateType:this.membershipForm.type,
+                        price:this.membershipForm.price
+                    }
+                    this.$axios.put(url,params).then(
+                        (res)=>{
+                            if(res.data.code=== this.$code.UPDATE_SUCCESS){
+                                this.$notify({ title: '升级成功', message:res.data.message, type: 'success' })
+                                this.reload();
+                            }
+                            else{
+                                this.$notify({ title: '升级失败', message:res.data.message , type: 'warning' })
+                            }
+                        }    
+                    ).catch(
+                        error=>{
+                            this.$notify({ title: '警告', message: '系统异常，请联系系统管理员', type: 'error' });
+                        }
+                    )}
+                    this.upgradeDialogVisible=false;
+                }
+                else{
+                this.$message({
+                    type:"error",
+                    message:"请选择升级会员卡的类型"
+                })
+                }
+                this.$refs.upgradeForm.resetFields()
+                
+            }
+                );
+            }
+        },
+            //关闭升级对话框
+            upgradeCancel()
+            {
+                this.$refs.upgradeForm.resetFields()
+                this.upgradeDialogVisible=false
+            },
             //暂停操作
             pause(){
                 //检查卡状态，是否已经暂停
@@ -208,7 +307,7 @@ import CustomerInfo from './customerInfo.vue';
                         }
                     }
                 ).catch((error)=>{
-                    // this.$notify({ title: '警告', message: '系统异常，请联系系统管理员', type: 'error' });
+                     this.$notify({ title: '警告', message: '系统异常，请联系系统管理员', type: 'error' });
                 })}
             },
             //激活操作
@@ -295,6 +394,17 @@ import CustomerInfo from './customerInfo.vue';
                     if(res.data.code===this.$code.SELECT_SUCCESS){
                         this.userInfo=res.data.data
                         
+                    }
+                    else if(res.data.code===this.$code.SELECT_FAILURE){
+                        this.$alert("系统异常，请稍后再试")
+                    }
+                }
+            )
+            url=this.$path.membershipCardUrl
+            this.$axios.get(url).then(
+                (res)=>{
+                    if(res.data.code===this.$code.SELECT_SUCCESS){
+                        this.membershipCards=res.data.data
                     }
                     else if(res.data.code===this.$code.SELECT_FAILURE){
                         this.$alert("系统异常，请稍后再试")

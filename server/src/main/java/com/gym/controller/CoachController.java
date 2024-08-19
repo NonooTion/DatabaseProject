@@ -1,11 +1,24 @@
 package com.gym.controller;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.gym.damain.Coach;
+import com.gym.damain.PracticeArea;
 import com.gym.damain.User;
+import com.gym.dao.CoachDao;
 import com.gym.dao.UserDao;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -13,63 +26,104 @@ import java.util.List;
 public class CoachController {
     @Autowired
     UserDao userDao;
-    @GetMapping
-    Result findCustomers(@RequestParam(required = false) String userType,
-                         @RequestParam(required = false) String tel,
-                         @RequestParam(required = false) String name)
-    {
-        QueryWrapper<User> qw= new QueryWrapper<>();
-        qw.eq(!userType.isEmpty(),"user_type",userType);
-        qw.eq(!tel.isEmpty(),"tel",tel);
-        qw.eq(!name.isEmpty(),"name",name);
-        List<User> users = userDao.selectList(qw);
-        Result result=new Result();
-        result.setData(users);
-        if(users.isEmpty()) {
-            result.setCode(Code.SELECT_FAILURE);
-            result.setMessage("无查询结果，请检查查询条件");
+    @Autowired
+    CoachDao coachDao;
+    @Value("${COACH_IMAGE_PATH}")
+    String UPLOAD_DIR;
+    @Value("${COACH_IMAGE_SAVE_PATH}")
+    String SAVE_PATH;
+
+    @Data
+    public  class CoachDTO{
+        Integer coachId;
+        BigDecimal ratePerHour;
+        String introduce;
+        String imageUrl;
+        String name;
+        CoachDTO(Coach coach)
+        {
+            this.coachId=coach.getCoachId();
+            this.ratePerHour=coach.getRatePerHour();
+            this.introduce=coach.getIntroduce();
+            this.imageUrl= coach.getImageUrl();
+            this.name=userDao.selectById(this.coachId).getName();
         }
+    }
+    @GetMapping
+    Result getAllCoaches()
+    {
+        List<Coach> coaches = coachDao.selectList(null);
+        List<CoachDTO> coachDTOS=new ArrayList<>();
+        for (Coach c:coaches)
+        {
+            coachDTOS.add(new CoachDTO(c));
+        }
+        return new Result(Code.SELECT_SUCCESS,coachDTOS,"查找成功");
+    }
+    @GetMapping("/findById")
+    Result getCoachInfoById(@RequestParam Integer userId)
+    {
+        QueryWrapper<Coach> queryWrapper=new QueryWrapper<>();
+        if(userId!=null)
+        {
+            queryWrapper.eq("coach_id",userId);
+        }
+        Coach coach = coachDao.selectOne(queryWrapper);
+        Result result=new Result();
         result.setCode(Code.SELECT_SUCCESS);
+        result.setData(coach);
         result.setMessage("查询成功");
         return result;
     }
-
-    @PostMapping
-    Result addCustomer(@RequestBody User user)
-    {
-        System.out.println(user);
-        //增加操作，将主键id设置成null
-        user.setUserId(null);
-        //查询用户名是否已经存在
-        QueryWrapper<User> qw=new QueryWrapper<>();
-        qw.eq("user_name",user.getUserName());
-        User user1 = userDao.selectOne(qw);
-        if (user1!=null) return new Result(Code.ADD_FAILURE,null,"用户名已存在");
-        //添加新用户
-        userDao.insert(user);
-        return new Result(Code.ADD_SUCCESS,null,"添加成功");
-    }
-
-    //删除教练
-    @DeleteMapping
-    Result deleteCustomer(@RequestParam(required = true)Integer userId)
-    {
-        if (userId!=null) {
-            userDao.deleteById(userId);
-            return new Result(Code.DELETE_SUCCESS,null,"删除成功");
-        }
-        return new Result(Code.DELETE_FAILURE,null,"删除失败");
-    }
-
-    //修改教练信息
     @PutMapping
-    Result updateCustomer(@RequestBody User user)
+    Result updateCoachInfo(@RequestBody Coach coach)
     {
-        if(user!=null)
+        if(coach!=null&&coach.getCoachId()>0)
         {
-            userDao.updateById(user);
-            return new Result(Code.UPDATE_SUCCESS,null,"更新成功");
+        coachDao.updateById(coach);
+            return new Result(Code.UPDATE_SUCCESS,coach,"更新成功");
         }
         return new Result(Code.UPDATE_FAILURE,null,"更新失败");
+    }
+
+    @PostMapping("/upload")
+    Result upload(@RequestParam MultipartFile file, @RequestParam String coachId)
+    {
+        if(!file.isEmpty()) {
+            // 获取文件的原始名称（包括扩展名）
+            String originalFilename = file.getOriginalFilename();
+
+            // 从原始文件名中提取扩展名
+            String extension = "";
+            int lastIndexOfDot = originalFilename.lastIndexOf('.');
+            if (lastIndexOfDot > 0) {
+                extension = originalFilename.substring(lastIndexOfDot);
+            }
+            Path targetLocation = Paths.get(UPLOAD_DIR).resolve(coachId+extension);
+            //删除相同文件名的文件
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(UPLOAD_DIR), path -> {
+                String fileName = path.getFileName().toString();
+                int dotIndex = fileName.lastIndexOf('.');
+                return dotIndex > 0 && fileName.substring(0, dotIndex).equals(coachId);
+            })) {
+                for (Path entry : stream) {
+                    Files.delete(entry); // 删除所有具有相同前缀的文件
+                }
+            } catch (IOException | DirectoryIteratorException e) {
+                throw new RuntimeException("无法删除具有相同前缀的文件", e);
+            }
+            // 保存文件
+            try {
+                Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            //设置练习区域图片路径
+            Coach coach=new Coach();
+            coach.setCoachId(Integer.valueOf(coachId));
+            coach.setImageUrl(SAVE_PATH+coachId+extension);
+            coachDao.updateById(coach);
+        }
+        return new Result(Code.UPDATE_SUCCESS, null, "上传成功");
     }
 }

@@ -10,9 +10,13 @@ import path from './data/path'
 import code from './data/code'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import moment from 'moment'
+import 'moment-timezone'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
 const app=createApp(App)
 app.use(router)
-app.use(ElementPlus)
+app.use(ElementPlus, {  
+    locale: zhCn,  
+  })  
 app.config.globalProperties.$axios = axios  
 app.config.globalProperties.$path = path 
 app.config.globalProperties.$code = code

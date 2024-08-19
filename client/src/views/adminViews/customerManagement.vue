@@ -164,7 +164,7 @@ import { SCOPE } from 'element-plus';
       //获取所有用户的信息
       findAll()
       {
-        let url=this.$path.customerUrl
+        let url=this.$path.userUrl
         let params=this.queryData
       this.$axios.get(url,{params:params}).then((res)=>{
         if(res.data.code==this.$code.SELECT_SUCCESS){
@@ -188,7 +188,7 @@ import { SCOPE } from 'element-plus';
       },
       editSubmit()
       {
-        let url=this.$path.customerUrl
+        let url=this.$path.userUrl
         let params=this.editForm
         this.$axios.put(url,params).then(
           (res)=>{
@@ -219,7 +219,7 @@ import { SCOPE } from 'element-plus';
             type: 'warning',
           }
         ).then(()=>{
-          let url=this.$path.customerUrl
+          let url=this.$path.userUrl
           let params=row;
           console.log(params)
           this.$axios.delete(url,{params:params}).then((res)=>{
@@ -250,7 +250,7 @@ import { SCOPE } from 'element-plus';
       handleQuery()
       {
         console.log(this.queryData)
-        let url=this.$path.customerUrl
+        let url=this.$path.userUrl
         let params=this.queryData
       this.$axios.get(url,{params:params}).then((res)=>{
         if(res.data.code==this.$code.SELECT_SUCCESS){
@@ -279,7 +279,7 @@ import { SCOPE } from 'element-plus';
       handleSubmit(){
         this.$refs.addForm.validate((valid)=>{
           if(valid){
-            let url=this.$path.customerUrl;
+            let url=this.$path.userUrl;
         let params=this.userForm;
         this.$axios.post(url,params).then((res)=>{
           if(res.data.code==this.$code.ADD_FAILURE){

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/login")
 public class LoggingController {
     @Autowired
     UserDao userDao;
@@ -18,7 +19,7 @@ public class LoggingController {
      * @param theUser
      * @return
      */
-    @PostMapping("/login")
+    @PostMapping
     Result login(@RequestBody User theUser) {
         //从前端获取登录账号的信息
         String userName=theUser.getUserName();

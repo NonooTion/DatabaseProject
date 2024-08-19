@@ -50,13 +50,13 @@
                     userType:'客户',
                     email:''
                 },
-                customerUrl:this.$path.customerUrl,
+                userUrl:this.$path.userUrl,
             }
         },
         methods:{
             handleSave()
             {
-            let url=this.customerUrl;
+            let url=this.userUrl;
             let params=this.userInfo;
             this.$axios.put(url,params).then(
             (res)=>{
@@ -73,7 +73,7 @@
             }
         },
         beforeMount(){
-            let url=this.customerUrl+"/findById"
+            let url=this.userUrl+"/findById"
             let params={
                 userId: sessionStorage.getItem('userId')
             }

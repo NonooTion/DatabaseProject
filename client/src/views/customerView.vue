@@ -22,20 +22,14 @@
       <el-menu-item index="/membership">会员信息</el-menu-item>
     </el-sub-menu>
 
-      <el-sub-menu index="2">
-      <template #title>Workspace</template>
-      <el-menu-item>item one</el-menu-item>
-      <el-menu-item>item two</el-menu-item>
-      <el-menu-item>item three</el-menu-item>
-      <el-sub-menu index="2-1">
-        <template #title>item four</template>
-        <el-menu-item>item one</el-menu-item>
-        <el-menu-item>item two</el-menu-item>
-        <el-menu-item>item three</el-menu-item>
-      
-        </el-sub-menu>
-    </el-sub-menu>
+    <el-sub-menu index="2">
+      <template #title>训练与课程</template>
+      <el-menu-item index="/practiceArea">自主练习区域</el-menu-item>
+      <el-menu-item index="/privateCoach">教练预约</el-menu-item>
+      <el-menu-item index="/groupClass">团课购买</el-menu-item>
+    </el-sub-menu>  
      
+    <el-menu-item index="/schedule">今日日程</el-menu-item>
     <el-menu-item index="/login" style="width:100px">退出登录</el-menu-item>
   </el-menu>
     </el-header>
