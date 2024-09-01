@@ -62,7 +62,7 @@
 					//存储登录用户的信息
 					sessionStorage.setItem('userId',res.data.data.userId)
 					sessionStorage.setItem('userType',res.data.data.userType)
-					
+					sessionStorage.setItem('isLoggedIn',true)
 					let userType=sessionStorage.getItem('userType')
 					//根据用户类型跳转页面
 					if(userType==="管理员") this.$router.push("/admin")
@@ -91,7 +91,11 @@
 		}
 	)
        }
-     }
+     },
+	 mounted()
+	 {
+		sessionStorage.setItem("isLoggedIn",false)
+	 }
   }
 </script>
  

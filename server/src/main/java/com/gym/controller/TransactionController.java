@@ -26,6 +26,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/transaction")
+@CrossOrigin
 public class TransactionController {
     @Autowired
     MembershipDao membershipDao;
@@ -76,6 +77,34 @@ public class TransactionController {
         return new Result(Code.SELECT_SUCCESS,transactionDTOS,"查找成功");
     }
 
+    @Data
+    public class AnalyzeDTO{
+        BigDecimal data;
+        String type;
+        AnalyzeDTO(Transaction transaction)
+        {
+            this.data=transaction.getAmount();
+            this.type=transaction.getTransactionType();
+        }
+    }
+    @GetMapping("/getByDate")
+    Result getTransactionsByDate(@RequestParam(required = false)String startDate,
+                                 @RequestParam(required = false)String endDate)
+    {
+
+        QueryWrapper<Transaction> queryWrapper=new QueryWrapper<>();
+        queryWrapper.ge(startDate!=null&&!startDate.isEmpty(),"DATE(transaction_date)",startDate);
+        queryWrapper.le(endDate!=null&&!endDate.isEmpty(),"DATE(transaction_date)",endDate);
+        queryWrapper.groupBy("transaction_type");
+        queryWrapper.select("sum(amount) as amount,transaction_type");
+        List<Transaction> transactions = transactionDao.selectList(queryWrapper);
+        List<AnalyzeDTO> analyzeDTOS = new ArrayList<>();
+        for (Transaction transaction:transactions)
+        {
+            analyzeDTOS.add(new AnalyzeDTO(transaction));
+        }
+        return new Result(Code.SELECT_SUCCESS,analyzeDTOS,"查找成功");
+    }
     @DeleteMapping
     Result deleteTransaction(@RequestParam(required = true)String transactionId)
     {

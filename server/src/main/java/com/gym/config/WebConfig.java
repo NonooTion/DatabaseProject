@@ -19,14 +19,6 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowCredentials(true)
                 .maxAge(3600);
     }
-    //静态资源
-
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-
-        registry.addResourceHandler("/pic/practiceAreas/**")
-                .addResourceLocations("classpath:/static/image/practiceAreas/");
-    }
 
 }
 

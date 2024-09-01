@@ -6,19 +6,23 @@ const routes =[
     {
         path:"/",
         alias:"/login",
-        component: ()=>import("@/views/loggingView.vue")
+        component: ()=>import("@/views/loggingView.vue"),
+        meta: { requiresAuth: false }
     },
     {
         path:"/register",
-        component: ()=>import("@/views/register.vue")
+        component: ()=>import("@/views/register.vue"),
+        meta: { requiresAuth: false }
     },
     {
         path:"/reset",
-        component: ()=>import("@/views/resetPasswordView.vue")
+        component: ()=>import("@/views/resetPasswordView.vue"),
+        meta: { requiresAuth: false }
     },
     {
         path:"/admin",
         component: ()=>import("@/views/adminView.vue"),
+        meta: { requiresAuth: true },
         children:[
             //人员管理
             {
@@ -59,11 +63,17 @@ const routes =[
                 path:'/transaction',
                 component: ()=>import("@/views/adminViews/transactionManagement.vue")
             },
+            //交易信息分析
+            {
+                path:'/transactionAnalyze',
+                component: ()=>import("@/views/adminViews/transactionAnalyze.vue")
+            }
         ]
     },
     {
         path:'/customer',
         component: ()=>import('@/views/customerView.vue'),
+        meta: { requiresAuth: true },
         children:[
             {
                 path:"/customerInfo",
@@ -94,6 +104,7 @@ const routes =[
     {
         path:'/coach',
         component: ()=>import('@/views/coachView.vue'),
+        meta: { requiresAuth: true },
         children:[
             {
                 path:'/personalInfo',
@@ -115,5 +126,23 @@ const router = createRouter({
     history: createWebHistory(),
     routes
 })
-
+router.beforeEach((to, from, next) => {  
+    if (to.matched.some(record => record.meta.requiresAuth)) {  
+      // 检查用户是否登录  
+      console.log(sessionStorage.getItem('isLoggedIn'));
+      
+      if (sessionStorage.getItem('isLoggedIn')==='false') {  
+        // 用户未登录，重定向到登录页面  
+        next({  
+          path: '/login',   
+        })  
+      } else {  
+        // 用户已登录，继续执行后续路由  
+        next()  
+      }  
+    } else {  
+      // 不需要登录的页面，直接放行  
+      next()  
+    }  
+  })
 export default router

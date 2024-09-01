@@ -56,6 +56,10 @@ public class CoachController {
         List<CoachDTO> coachDTOS=new ArrayList<>();
         for (Coach c:coaches)
         {
+            User user=userDao.selectById(c.getCoachId());
+            if (c.getRatePerHour()==null||c.getIntroduce()==null||c.getIntroduce().isEmpty()||user.getName()==null||user.getName().isEmpty()){
+                continue;
+            }
             coachDTOS.add(new CoachDTO(c));
         }
         return new Result(Code.SELECT_SUCCESS,coachDTOS,"查找成功");

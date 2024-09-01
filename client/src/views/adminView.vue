@@ -49,6 +49,7 @@
                 <span>财务管理</span>
               </template>
                 <el-menu-item index="/transaction">交易信息管理</el-menu-item>
+                <el-menu-item index="/transactionAnalyze">交易信息分析</el-menu-item>
             </el-sub-menu>
             <el-menu-item index="/">登出</el-menu-item>
         </el-menu>

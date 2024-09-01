@@ -12,7 +12,11 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import moment from 'moment'
 import 'moment-timezone'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import Echarts from "vue-echarts"
+import 'echarts'
+
 const app=createApp(App)
+app.component('Echarts',Echarts)
 app.use(router)
 app.use(ElementPlus, {  
     locale: zhCn,  

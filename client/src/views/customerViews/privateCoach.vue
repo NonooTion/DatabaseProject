@@ -20,7 +20,7 @@
 
     <el-container style="background-color: #e3e0f3;  height: fit-content; min-height: 100%;">
         <div style="background-color: #faf7ff; margin-left: 10%; margin-right: 10%; width: 100%; ">
-        <el-card class="box-card" v-for="coach in coaches" :key="coach.id"  >  
+        <el-card class="box-card" v-for="coach in coaches" :key="coach.id">  
         <img :src="coach.imageUrl" class="image" alt="教练图片">  
         <div class="content">  
           <h3>{{ coach.name }}</h3>
